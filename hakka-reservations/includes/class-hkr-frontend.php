@@ -11,6 +11,7 @@ class HKR_Frontend {
 
 	public static function init() {
 		add_shortcode( 'hakka_booking', array( __CLASS__, 'booking_form' ) );
+		add_shortcode( 'hakka_locations', array( __CLASS__, 'locations_cards' ) );
 		add_shortcode( 'hakka_manage_booking', array( __CLASS__, 'manage_page' ) );
 		add_shortcode( 'hakka_staff_bookings', array( __CLASS__, 'staff_screen' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_assets' ) );
@@ -101,6 +102,68 @@ class HKR_Frontend {
 		}
 	}
 
+	/**
+	 * [hakka_locations] – a card per location: name, address, opening hours, phone, directions and a booking link.
+	 * Everything comes from Reservations → Locations, so the page follows any change made there.
+	 *
+	 * Attributes: book_url (page with the booking form; default this page), book_label, show_book ("yes"/"no").
+	 */
+	public static function locations_cards( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'book_url'   => '',
+				'book_label' => __( 'Book here', 'hakka-reservations' ),
+				'show_book'  => 'yes',
+			),
+			$atts,
+			'hakka_locations'
+		);
+		self::register_assets();
+		wp_enqueue_style( 'hkr-booking' );
+		wp_enqueue_script( 'hkr-booking' );
+		$book_url = $atts['book_url'] ? $atts['book_url'] : ( get_permalink() ? get_permalink() : home_url( '/' ) );
+		$locs     = HKR_Locations::all( true );
+		if ( ! $locs ) {
+			return '';
+		}
+		ob_start();
+		?>
+		<div class="hkr-locations" style="<?php echo esc_attr( self::color_vars() ); ?>">
+			<?php foreach ( $locs as $loc ) : ?>
+				<article class="hkr-loc-card">
+					<h3 class="hkr-loc-card__name">
+						<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+						<?php echo esc_html( $loc['name'] ); ?>
+					</h3>
+					<?php if ( $loc['address'] ) : ?>
+						<p class="hkr-loc-card__address"><?php echo nl2br( esc_html( $loc['address'] ) ); ?></p>
+					<?php endif; ?>
+					<ul class="hkr-loc-card__hours" aria-label="<?php esc_attr_e( 'Opening hours', 'hakka-reservations' ); ?>">
+						<?php foreach ( HKR_Locations::hours_summary( $loc ) as $line ) : ?>
+							<li><?php echo esc_html( $line ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+					<?php if ( $loc['phone'] ) : ?>
+						<a class="hkr-loc-card__phone" href="<?php echo esc_url( 'tel:' . $loc['phone'] ); ?>">
+							<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+							<?php echo esc_html( hkr_display_phone( $loc['phone'] ) ); ?>
+						</a>
+					<?php endif; ?>
+					<div class="hkr-loc-card__actions">
+						<?php if ( 'no' !== $atts['show_book'] ) : ?>
+							<a class="hkr-loc-card__btn hkr-loc-card__btn--book" data-hkr-pick="<?php echo esc_attr( $loc['slug'] ); ?>" href="<?php echo esc_url( add_query_arg( 'loc', $loc['slug'], $book_url ) . '#book' ); ?>"><?php echo esc_html( $atts['book_label'] ); ?></a>
+						<?php endif; ?>
+						<?php if ( $loc['map_url'] ) : ?>
+							<a class="hkr-loc-card__btn" href="<?php echo esc_url( $loc['map_url'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Get directions', 'hakka-reservations' ); ?></a>
+						<?php endif; ?>
+					</div>
+				</article>
+			<?php endforeach; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	public static function register_assets() {
 		wp_register_style( 'hkr-booking', HKR_URL . 'assets/css/booking.css', array(), self::asset_version( 'assets/css/booking.css' ) );
 		wp_register_script( 'hkr-booking', HKR_URL . 'assets/js/booking.js', array(), self::asset_version( 'assets/js/booking.js' ), true );
@@ -157,6 +220,7 @@ class HKR_Frontend {
 		$id = 'hkr-booking-' . wp_rand( 1000, 99999 );
 		ob_start();
 		?>
+		<span id="book" class="hkr-anchor" aria-hidden="true"></span>
 		<div class="hkr-booking" id="<?php echo esc_attr( $id ); ?>" style="<?php echo esc_attr( self::color_vars() ); ?>" data-hkr-config="<?php echo esc_attr( wp_json_encode( $config ) ); ?>">
 			<noscript><?php esc_html_e( 'Please turn on JavaScript to book online, or call us to book a table.', 'hakka-reservations' ); ?></noscript>
 			<div class="hkr-loading" aria-live="polite"><?php esc_html_e( 'Loading booking form…', 'hakka-reservations' ); ?></div>

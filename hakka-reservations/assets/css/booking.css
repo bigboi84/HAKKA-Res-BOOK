@@ -286,7 +286,38 @@ dialog.hkr-modal::backdrop { background: rgba(0,0,0,.72); }
 	.hkr-booking .hkr-hero, .hkr-hero__content { min-height: 200px; }
 	.hkr-booking .hkr-hero::before { padding-top: 66.667%; }
 	.hkr-booking .hkr-hero__name { font-size: 22px; }
-		@media (prefers-reduced-motion: reduce) {
+	.hkr-grid { grid-template-columns: 1fr; }
+	.hkr-booking .hkr-summary { grid-template-columns: 1fr; gap: 2px; }
+	.hkr-booking .hkr-summary dd { margin-bottom: 8px; }
+	.hkr-actions { flex-direction: column-reverse; }
+	.hkr-booking .hkr-actions .hkr-btn { width: 100%; }
+	.hkr-options { grid-template-columns: 1fr; }
+	.hkr-slots { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+	.hkr-cal__grid { gap: 4px; }
+	.hkr-booking .hkr-stepper__value { min-width: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
 	.hkr-hero__img, .hkr-booking .hkr-hero, .hkr-booking button { transition: none !important; }
 	dialog.hkr-modal[open] { animation: none; }
 }
+
+/* ---------- [hakka_locations] cards ---------- */
+.hkr-anchor { display: block; position: relative; top: -110px; visibility: hidden; }
+.hkr-locations { --hkr-primary: #dd3333; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; width: 100%; max-width: 1000px; margin: 0 auto; font-family: inherit; }
+.hkr-locations *, .hkr-locations *::before, .hkr-locations *::after { box-sizing: border-box; }
+.hkr-loc-card { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 40px 28px; text-align: center; background: #000; color: #fff; border: 1px solid var(--hkr-primary); border-radius: 14px; }
+.hkr-locations .hkr-loc-card__name { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 !important; padding: 0; font-size: 24px !important; line-height: 1.25 !important; font-weight: 700 !important; color: #fff !important; text-transform: none !important; letter-spacing: normal !important; font-family: inherit !important; }
+.hkr-loc-card__name svg { color: var(--hkr-primary); flex: none; }
+.hkr-locations .hkr-loc-card__address { margin: 0 !important; font-size: 17px; line-height: 1.5; color: #fff !important; }
+.hkr-locations .hkr-loc-card__hours { list-style: none !important; margin: 0 !important; padding: 0 !important; font-size: 15px; line-height: 1.7; color: #e6e6e6 !important; }
+.hkr-locations .hkr-loc-card__hours li { margin: 0 !important; padding: 0 !important; list-style: none !important; background: none !important; }
+.hkr-locations .hkr-loc-card__hours li::before { content: none !important; }
+.hkr-locations a.hkr-loc-card__phone { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 19px; font-weight: 600; color: #fff !important; text-decoration: none !important; }
+.hkr-loc-card__phone svg { color: var(--hkr-primary); }
+.hkr-locations a.hkr-loc-card__phone:hover { color: var(--hkr-primary) !important; }
+.hkr-loc-card__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.hkr-locations a.hkr-loc-card__btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--hkr-primary) !important; background: transparent !important; color: #fff !important; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; text-decoration: none !important; transition: background-color .2s, color .2s; }
+.hkr-locations a.hkr-loc-card__btn:hover, .hkr-locations a.hkr-loc-card__btn--book { background: var(--hkr-primary) !important; color: #fff !important; }
+.hkr-locations a.hkr-loc-card__btn--book:hover { background: color-mix(in srgb, var(--hkr-primary) 80%, #000) !important; }
+.hkr-locations a.hkr-loc-card__btn:focus-visible, .hkr-locations a.hkr-loc-card__phone:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-width: 600px) { .hkr-loc-card { padding: 32px 20px; } .hkr-locations .hkr-loc-card__name { font-size: 21px !important; } }

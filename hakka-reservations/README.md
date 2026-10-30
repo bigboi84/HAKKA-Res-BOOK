@@ -27,6 +27,7 @@ Built to replace MotoPress Appointment Booking. Full spec: `../docs/booking-plug
   - **Messages & Email**: wording for every email, with preview and test send.
   - **Booking staff**: add or remove staff logins.
   - **Reports**: guests per location, no-shows, cancellations, busiest times, CSV export.
+- **Location cards** `[hakka_locations]`: one card per location with its address, opening hours, a tap-to-call phone, a "Book here" button and Get directions. The details come from Reservations → Locations, so the cards follow any change made there. On a page that also has the booking form, "Book here" picks that location and scrolls to the form.
 - **Guest manage link** `[hakka_manage_booking]` at `/manage-booking/` – the guest can cancel (up to the cutoff) or ask for a change.
 
 ## Set up on first activation

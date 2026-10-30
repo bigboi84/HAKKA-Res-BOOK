@@ -1103,6 +1103,27 @@
 		} );
 	}
 
+	/** "Book here" on a [hakka_locations] card: when the form is on the same page, pick that location and scroll up to it. */
+	document.addEventListener( 'click', function ( e ) {
+		var link = e.target.closest ? e.target.closest( '[data-hkr-pick]' ) : null;
+		var node = document.querySelector( '.hkr-booking[data-hkr-config]' );
+		if ( ! link || ! node || ! node.__hkr ) {
+			return;
+		}
+		var booking = node.__hkr;
+		var loc = booking.cfg.locations.filter( function ( l ) {
+			return l.slug === link.getAttribute( 'data-hkr-pick' );
+		} )[ 0 ];
+		if ( ! loc ) {
+			return;
+		}
+		e.preventDefault();
+		if ( ! booking.state.loc || booking.state.loc.id !== loc.id ) {
+			booking.selectLocation( loc, true );
+		}
+		node.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+	} );
+
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', boot );
 	} else {
