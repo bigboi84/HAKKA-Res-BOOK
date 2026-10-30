@@ -89,6 +89,7 @@
 		this.step = 'type';
 		this.serverErrors = null;
 		this.render();
+		this.refreshLocations();
 	}
 
 	Booking.prototype.api = function ( path, opts ) {
@@ -112,6 +113,48 @@
 				return data;
 			} );
 		} );
+	};
+
+	/**
+	 * The page (and the location details inside it) may be served from a page cache that is older
+	 * than the latest admin change. Fetch the live details and swap them in, so photos, photo
+	 * positions, hours and booking types are always current.
+	 */
+	Booking.prototype.refreshLocations = function () {
+		var self = this;
+		this.api( '/locations' ).then( function ( fresh ) {
+			if ( ! Array.isArray( fresh ) || ! fresh.length ) {
+				return;
+			}
+			var byId = {};
+			fresh.forEach( function ( l ) {
+				byId[ l.id ] = l;
+			} );
+			var updated = self.cfg.locations.map( function ( l ) {
+				return byId[ l.id ] || l;
+			} );
+			if ( JSON.stringify( updated ) === JSON.stringify( self.cfg.locations ) ) {
+				return;
+			}
+			self.cfg.locations = updated;
+			var s = self.state;
+			if ( ! s.loc ) {
+				if ( self.step === 'location' || self.root.classList.contains( 'hkr-booking--picking' ) ) {
+					self.view_location();
+				}
+				return;
+			}
+			s.loc = byId[ s.loc.id ] || s.loc;
+			if ( s.area ) {
+				s.area = s.loc.areas.filter( function ( a ) {
+					return a.id === s.area.id;
+				} )[ 0 ] || s.area;
+			}
+			self.showHero( s.loc );
+			if ( self.step === 'type' ) {
+				self.go( 'type', true );
+			}
+		} ).catch( function () {} );
 	};
 
 	/** A location is only pre-selected when the link or shortcode names one (?loc=brentwood). */
