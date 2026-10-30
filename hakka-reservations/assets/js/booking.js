@@ -260,9 +260,14 @@
 	};
 
 	function frameImg( img, m ) {
-		img.style.objectPosition = m.pos;
-		img.style.transformOrigin = m.pos;
-		img.style.transform = m.zoom > 1 ? 'scale(' + m.zoom + ')' : '';
+		// Important, so theme image rules can't move the photo away from where it was placed in the admin.
+		img.style.setProperty( 'object-position', m.pos, 'important' );
+		img.style.setProperty( 'transform-origin', m.pos, 'important' );
+		if ( m.zoom > 1 ) {
+			img.style.setProperty( 'transform', 'scale(' + m.zoom + ')', 'important' );
+		} else {
+			img.style.removeProperty( 'transform' );
+		}
 	}
 
 	/** Cross-fade the header photo to match the current location and booking type. */

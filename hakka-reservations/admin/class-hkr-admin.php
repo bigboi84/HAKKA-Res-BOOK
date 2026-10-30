@@ -56,6 +56,8 @@ class HKR_Admin {
 				'useImage'     => __( 'Use this image', 'hakka-reservations' ),
 				'removeConfirm' => __( 'Remove this row?', 'hakka-reservations' ),
 				'noSlots'      => __( 'No times on this day.', 'hakka-reservations' ),
+				/* translators: 1: photo width in pixels, 2: recommended width */
+				'smallPhoto'   => __( 'This photo is only %1$d px wide, so it will look blurry here. Use one at least %2$d px wide (a landscape photo works best).', 'hakka-reservations' ),
 			)
 		);
 		if ( false !== strpos( (string) $hook, 'hkr-locations' ) || false !== strpos( (string) $hook, 'hkr-settings' ) ) {
@@ -100,8 +102,9 @@ class HKR_Admin {
 	public static function image_field( $name, $attachment_id, $help = '', $field_id = '' ) {
 		$url   = $attachment_id ? wp_get_attachment_image_url( (int) $attachment_id, 'medium' ) : '';
 		$large = $attachment_id ? wp_get_attachment_image_url( (int) $attachment_id, 'large' ) : '';
+		$full  = $attachment_id ? wp_get_attachment_image_src( (int) $attachment_id, 'full' ) : false;
 		?>
-		<div class="hkr-image-field"<?php echo $field_id ? ' id="' . esc_attr( $field_id ) . '"' : ''; ?> data-large="<?php echo esc_url( $large ); ?>">
+		<div class="hkr-image-field"<?php echo $field_id ? ' id="' . esc_attr( $field_id ) . '"' : ''; ?> data-large="<?php echo esc_url( $large ); ?>" data-width="<?php echo esc_attr( $full ? (int) $full[1] : 0 ); ?>">
 			<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( (int) $attachment_id ); ?>" class="hkr-image-id">
 			<div class="hkr-image-preview"><?php if ( $url ) : ?><img src="<?php echo esc_url( $url ); ?>" alt=""><?php endif; ?></div>
 			<button type="button" class="button hkr-image-choose"><?php esc_html_e( 'Choose image', 'hakka-reservations' ); ?></button>

@@ -16,7 +16,7 @@
 			wrap.find( '.hkr-image-id' ).val( att.id );
 			wrap.find( '.hkr-image-preview' ).html( $( '<img alt="">' ).attr( 'src', url ) );
 			wrap.find( '.hkr-image-remove' ).prop( 'hidden', false );
-			wrap.attr( 'data-large', large ).trigger( 'hkr:image' );
+			wrap.attr( 'data-large', large ).attr( 'data-width', att.width || 0 ).trigger( 'hkr:image' );
 		} );
 		frame.open();
 	} );
@@ -26,7 +26,7 @@
 		wrap.find( '.hkr-image-id' ).val( 0 );
 		wrap.find( '.hkr-image-preview' ).empty();
 		$( this ).prop( 'hidden', true );
-		wrap.attr( 'data-large', '' ).trigger( 'hkr:image' );
+		wrap.attr( 'data-large', '' ).attr( 'data-width', 0 ).trigger( 'hkr:image' );
 	} );
 
 	/*
@@ -61,14 +61,41 @@
 	function loadFramer( framer ) {
 		var main = sourceUrl( framer.getAttribute( 'data-source' ) );
 		var phone = sourceUrl( framer.getAttribute( 'data-mob-source' ) ) || main;
+		var widthOf = function ( id ) {
+			var field = id ? document.getElementById( id ) : null;
+			return field ? parseInt( field.getAttribute( 'data-width' ), 10 ) || 0 : 0;
+		};
+		var mainWidth = widthOf( framer.getAttribute( 'data-source' ) );
+		var phoneWidth = sourceUrl( framer.getAttribute( 'data-mob-source' ) ) ? widthOf( framer.getAttribute( 'data-mob-source' ) ) : mainWidth;
 		$( framer ).toggleClass( 'has-image', !! main );
 		framerViews( framer ).forEach( function ( v ) {
 			var src = v.mode === 'm' ? phone : main;
+			v.width = v.mode === 'm' ? phoneWidth : mainWidth;
 			if ( src && v.img.getAttribute( 'src' ) !== src ) {
+				v.img.onload = function () {
+					sizeWarning( v );
+				};
 				v.img.src = src;
 			}
 			paint( v );
+			if ( v.img.complete ) {
+				sizeWarning( v );
+			}
 		} );
+	}
+	/** A photo narrower than the header looks blurry once it is stretched to fit. */
+	function sizeWarning( v ) {
+		var need = v.mode === 'm' ? 700 : 1400;
+		var w = v.width || v.img.naturalWidth;
+		var warn = v.el.find( '.hkr-framer__warn' );
+		if ( ! warn.length ) {
+			warn = $( '<p class="hkr-framer__warn" role="status"></p>' ).insertAfter( v.el.find( '.hkr-framer__tools' ) );
+		}
+		if ( w && w < need ) {
+			warn.text( hkrAdmin.smallPhoto.replace( '%1$d', w ).replace( '%2$d', need ) ).prop( 'hidden', false );
+		} else {
+			warn.prop( 'hidden', true );
+		}
 	}
 	/** How far (in px) the photo can travel inside the frame for a given zoom, on each axis. */
 	function travel( v ) {

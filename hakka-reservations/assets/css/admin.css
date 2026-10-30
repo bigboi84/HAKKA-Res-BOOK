@@ -67,3 +67,5 @@
 .hkr-area-photo summary { cursor: pointer; display: inline-flex; align-items: center; gap: 10px; padding: 4px 0 8px; color: #2271b1; font-weight: 600; }
 .hkr-area-thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; display: block; }
 .hkr-area-photo__body { display: grid; gap: 14px; padding: 4px 0 14px; max-width: 920px; }
+.hkr-framer__warn { margin: 8px 0 0; padding: 8px 10px; border-left: 4px solid #dba617; background: #fcf9e8; color: #50575e; max-width: 640px; }
+.hkr-framer__warn[hidden] { display: none; }
