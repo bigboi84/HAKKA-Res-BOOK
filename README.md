@@ -22,4 +22,4 @@ To make a fresh zip from the source:
 zip -r docs/hakka-reservations.zip hakka-reservations -x '*.DS_Store'
 ```
 
-Current version: **1.0.7**.
+Current version: **1.0.8**.

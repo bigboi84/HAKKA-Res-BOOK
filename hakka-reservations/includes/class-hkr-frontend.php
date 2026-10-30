@@ -16,6 +16,7 @@ class HKR_Frontend {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_assets' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'staff_app' ), 5 );
 		add_action( 'template_redirect', array( __CLASS__, 'private_pages' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'no_cache_booking_pages' ) );
 		add_filter( 'wp_robots', array( __CLASS__, 'robots' ) );
 		add_filter( 'rank_math/frontend/robots', array( __CLASS__, 'rank_math_robots' ) );
 		add_filter( 'rank_math/sitemap/posts_to_exclude', array( __CLASS__, 'rank_math_exclude' ) );
@@ -73,11 +74,38 @@ class HKR_Frontend {
 		return $args;
 	}
 
+	/**
+	 * Asset version: the plugin version plus the file's modified time, so a changed file always gets a new URL
+	 * (browsers, SiteGround and Cloudflare can't keep serving an old copy).
+	 */
+	public static function asset_version( $relative ) {
+		$file = HKR_DIR . $relative;
+		return HKR_VERSION . ( file_exists( $file ) ? '.' . filemtime( $file ) : '' );
+	}
+
+	/**
+	 * Pages with the booking form are never page-cached. The form shows live availability, and a cached copy
+	 * could hold old photos, hours or booking types after a change in the admin.
+	 */
+	public static function no_cache_booking_pages() {
+		if ( ! is_singular() ) {
+			return;
+		}
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return;
+		}
+		$content = (string) $post->post_content . (string) get_post_meta( $post->ID, '_elementor_data', true );
+		if ( false !== strpos( $content, 'hakka_booking' ) || (int) HKR_Settings::get( 'test_page_id' ) === $post->ID ) {
+			hkr_no_cache();
+		}
+	}
+
 	public static function register_assets() {
-		wp_register_style( 'hkr-booking', HKR_URL . 'assets/css/booking.css', array(), HKR_VERSION );
-		wp_register_script( 'hkr-booking', HKR_URL . 'assets/js/booking.js', array(), HKR_VERSION, true );
-		wp_register_style( 'hkr-staff', HKR_URL . 'assets/css/staff.css', array(), HKR_VERSION );
-		wp_register_script( 'hkr-staff', HKR_URL . 'assets/js/staff.js', array(), HKR_VERSION, true );
+		wp_register_style( 'hkr-booking', HKR_URL . 'assets/css/booking.css', array(), self::asset_version( 'assets/css/booking.css' ) );
+		wp_register_script( 'hkr-booking', HKR_URL . 'assets/js/booking.js', array(), self::asset_version( 'assets/js/booking.js' ), true );
+		wp_register_style( 'hkr-staff', HKR_URL . 'assets/css/staff.css', array(), self::asset_version( 'assets/css/staff.css' ) );
+		wp_register_script( 'hkr-staff', HKR_URL . 'assets/js/staff.js', array(), self::asset_version( 'assets/js/staff.js' ), true );
 	}
 
 	private static function color_vars() {
@@ -405,7 +433,7 @@ class HKR_Frontend {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap">
-<link rel="stylesheet" href="<?php echo esc_url( HKR_URL . 'assets/css/staff.css?ver=' . HKR_VERSION ); ?>">
+<link rel="stylesheet" href="<?php echo esc_url( HKR_URL . 'assets/css/staff.css?ver=' . self::asset_version( 'assets/css/staff.css' ) ); ?>">
 </head>
 <body class="hkr-staff-app" style="<?php echo esc_attr( self::color_vars() ); ?>">
 		<?php if ( ! is_user_logged_in() ) : ?>
@@ -446,7 +474,7 @@ class HKR_Frontend {
 </main>
 		<?php else : ?>
 <div class="hkr-staff" data-hkr-staff="<?php echo esc_attr( wp_json_encode( self::staff_config( $page_url ) ) ); ?>"><div class="hkr-loading"><?php esc_html_e( 'Loading bookings…', 'hakka-reservations' ); ?></div></div>
-<script src="<?php echo esc_url( HKR_URL . 'assets/js/staff.js?ver=' . HKR_VERSION ); ?>"></script>
+<script src="<?php echo esc_url( HKR_URL . 'assets/js/staff.js?ver=' . self::asset_version( 'assets/js/staff.js' ) ); ?>"></script>
 		<?php endif; ?>
 </body>
 </html>
