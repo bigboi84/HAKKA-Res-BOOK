@@ -1,0 +1,69 @@
+/* HAKKA Reservations – admin. */
+.hkr-wrap .hkr-panel { background: #fff; border: 1px solid #dcdcde; border-radius: 6px; padding: 4px 20px 16px; margin: 16px 0; }
+.hkr-wrap .hkr-panel > h2 { margin-top: 16px; }
+.hkr-wrap details.hkr-panel > summary { cursor: pointer; padding: 14px 0; font-size: 14px; }
+.hkr-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+@media (max-width: 1100px) { .hkr-columns { grid-template-columns: 1fr; } }
+
+.hkr-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+.hkr-tabs { position: sticky; top: 32px; z-index: 5; display: flex; flex-wrap: wrap; gap: 4px; background: #f0f0f1; padding: 8px 0; }
+.hkr-tabs a { padding: 6px 12px; border-radius: 4px; background: #fff; border: 1px solid #dcdcde; text-decoration: none; }
+.hkr-savebar { position: sticky; bottom: 0; background: #f0f0f1; padding: 12px 0; border-top: 1px solid #dcdcde; z-index: 5; }
+
+.hkr-hours th { width: 120px; }
+.hkr-hours td, .hkr-hours th { vertical-align: middle; }
+.hkr-hours .hkr-closed-cell { width: 110px; }
+.hkr-hours tr.is-closed .hkr-ranges { opacity: .4; }
+.hkr-range { display: inline-flex; gap: 6px; align-items: center; margin: 3px 12px 3px 0; }
+.hkr-remove-range { color: #b32d2e; font-size: 18px; text-decoration: none; }
+.hkr-areas input[type="text"] { width: 100%; min-width: 120px; }
+.hkr-days label { display: inline-flex; flex-direction: column; align-items: center; font-size: 11px; margin-right: 2px; }
+.hkr-overrides input { width: 80px; }
+
+.hkr-image-field .hkr-image-preview img { max-width: 320px; max-height: 140px; display: block; margin-bottom: 8px; border-radius: 4px; }
+
+.hkr-status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; background: #eee; }
+.hkr-status--pending { background: #ffe7a8; color: #7a4b00; }
+.hkr-status--confirmed { background: #d6f2e0; color: #1d6b36; }
+.hkr-status--seated { background: #dbe7ff; color: #1e3a8a; }
+.hkr-status--cancelled, .hkr-status--declined, .hkr-status--no_show { background: #fdecec; color: #9b1c1c; }
+.hkr-tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 8px; background: #fff1d6; color: #7a4b00; }
+.hkr-tag--warn { background: #fdecec; color: #9b1c1c; }
+
+.hkr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 16px; }
+.hkr-big { font-size: 30px; font-weight: 700; margin: 4px 0; }
+.hkr-big span { font-size: 14px; font-weight: 400; color: #666; }
+.hkr-template .form-table th { width: 140px; }
+
+/* Photo position editor (same proportions as the booking form header). */
+.hkr-framer { margin-top: 4px; }
+.hkr-framer__empty { margin: 0; padding: 14px 16px; background: #f6f7f7; border: 1px dashed #c3c4c7; border-radius: 6px; color: #50575e; }
+.hkr-framer.has-image .hkr-framer__empty { display: none; }
+.hkr-framer:not(.has-image) .hkr-framer__views { display: none; }
+.hkr-framer__views { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.hkr-framer__view--d { flex: 1 1 420px; max-width: 640px; }
+.hkr-framer__view--m { flex: 0 0 240px; }
+.hkr-framer__label { margin: 0 0 6px; font-weight: 600; }
+.hkr-framer__frame { position: relative; display: block; overflow: hidden; border-radius: 10px; background: #111; cursor: grab; touch-action: none; user-select: none; box-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 6px 18px rgba(0,0,0,.15); }
+.hkr-framer__view--d .hkr-framer__frame { aspect-ratio: 16 / 5; }
+.hkr-framer__view--m .hkr-framer__frame { aspect-ratio: 3 / 2; }
+.hkr-framer__frame.is-dragging { cursor: grabbing; }
+.hkr-framer__frame:focus-visible { outline: 3px solid #2271b1; outline-offset: 2px; }
+.hkr-framer__frame img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; }
+.hkr-framer__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.85) 100%); pointer-events: none; }
+.hkr-framer__sample { position: absolute; left: 14px; right: 14px; bottom: 12px; color: #fff; pointer-events: none; display: flex; flex-direction: column; }
+.hkr-framer__sample strong { font-size: 18px; line-height: 1.2; }
+.hkr-framer__view--m .hkr-framer__sample strong { font-size: 15px; }
+.hkr-framer__sample span { font-size: 12px; opacity: .9; }
+.hkr-framer__hint { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; pointer-events: none; transition: opacity .2s; }
+.hkr-framer__frame:hover .hkr-framer__hint, .hkr-framer__frame.is-dragging .hkr-framer__hint { opacity: 0; }
+.hkr-framer__tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.hkr-framer__tools label { display: flex; align-items: center; gap: 8px; flex: 1; }
+.hkr-framer__zoom { flex: 1; max-width: 220px; }
+
+/* Booking type photo row. */
+.hkr-areas tbody.hkr-area + tbody.hkr-area > tr:first-child > td { border-top: 1px solid #dcdcde; }
+.hkr-area-photo > td { padding-top: 0 !important; }
+.hkr-area-photo summary { cursor: pointer; display: inline-flex; align-items: center; gap: 10px; padding: 4px 0 8px; color: #2271b1; font-weight: 600; }
+.hkr-area-thumb img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; display: block; }
+.hkr-area-photo__body { display: grid; gap: 14px; padding: 4px 0 14px; max-width: 920px; }
